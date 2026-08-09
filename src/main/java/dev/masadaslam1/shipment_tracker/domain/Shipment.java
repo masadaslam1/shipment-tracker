@@ -33,7 +33,7 @@ public class Shipment {
     private String origin;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String destination;
 
 
