@@ -15,11 +15,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-logging:
-  level:
-    liquibase: DEBUG
-
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -30,6 +25,10 @@ logging:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+logging:
+  level:
+    liquibase: DEBUG
 
 server:
   port: 8083
