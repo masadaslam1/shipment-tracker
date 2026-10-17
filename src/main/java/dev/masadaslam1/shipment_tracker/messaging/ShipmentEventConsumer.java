@@ -1,5 +1,6 @@
 package dev.masadaslam1.shipment_tracker.messaging;
 
+import dev.masadaslam1.shipment_tracker.domain.Shipment;
 import dev.masadaslam1.shipment_tracker.service.ShipmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,14 @@ public class ShipmentEventConsumer {
 
     private final ObjectMapper objectMapper;
     private final ShipmentService service;
+    private final WebSocketBroadcastService broadcastService;
 
     @KafkaListener(topics = SHIPMENT_EVENTS_TOPIC)
     public void onShipmentEvent(String payload) {
         try {
             ShipmentEvent event = objectMapper.readValue(payload, ShipmentEvent.class);
-            service.upsert(event);
+            Shipment shipment = service.upsert(event);
+            broadcastService.broadcast(shipment);
         } catch (JacksonException e) {
             log.error("Skipping malformed shipment event: {}", payload, e);
         }

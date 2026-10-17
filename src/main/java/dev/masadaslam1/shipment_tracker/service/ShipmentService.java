@@ -19,17 +19,16 @@ public class ShipmentService {
     private final ShipmentRepository shipmentRepository;
 
     @Transactional
-    public void upsert(ShipmentEvent event) {
+    public Shipment upsert(ShipmentEvent event) {
         Optional<Shipment> existing = shipmentRepository.findByTrackingNumber(event.trackingNumber());
 
         if (existing.isPresent()) {
-            update(existing.get(), event);
-        } else {
-            create(event);
+            return update(existing.get(), event);
         }
+        return create(event);
     }
 
-    private void update(Shipment shipment, ShipmentEvent event) {
+    private Shipment update(Shipment shipment, ShipmentEvent event) {
         shipment.setStatus(event.shipmentStatus());
         shipment.setOrigin(event.origin());
         shipment.setDestination(event.destination());
@@ -42,9 +41,10 @@ public class ShipmentService {
         shipment.setLastUpdated(Instant.now()); // @PrePersist only runs on insert
 
         log.info("Updated shipment {}", event.trackingNumber());
+        return shipment;
     }
 
-    private void create(ShipmentEvent event) {
+    private Shipment create(ShipmentEvent event) {
         Shipment shipment = Shipment.builder()
                 .trackingNumber(event.trackingNumber())
                 .status(event.shipmentStatus())
@@ -58,8 +58,9 @@ public class ShipmentService {
                 .description(event.description())
                 .build();
 
-        shipmentRepository.save(shipment); // createdAt and lastUpdated filled by @PrePersist
+        Shipment saved = shipmentRepository.save(shipment); // managed instance has generated id + @PrePersist timestamps
 
         log.info("Created shipment {}", event.trackingNumber());
+        return saved;
     }
 }
