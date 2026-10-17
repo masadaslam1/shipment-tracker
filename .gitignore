@@ -37,3 +37,6 @@ build/
 
 ### Local working notes ###
 CLAUDE.md
+
+### Local dev tools ###
+src/main/resources/static/ws-debug.html
