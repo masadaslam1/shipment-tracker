@@ -1,5 +1,7 @@
 # Shipment Tracker
 
+![CI](https://github.com/masadaslam1/shipment-tracker/actions/workflows/ci.yml/badge.svg)
+
 Real-time shipment tracking dashboard. A shipment simulator publishes events to Kafka, a Spring Boot backend consumes them, persists them to PostgreSQL, and streams every update over WebSocket to an Angular table. Built as a portfolio project to demonstrate an end-to-end event-driven system.
 
 ## Architecture
@@ -72,6 +74,16 @@ set -a; source .env; set +a; ./mvnw.cmd test
 # Frontend
 cd frontend && npm test -- --watch=false --browsers=ChromeHeadless
 ```
+
+## CI/CD
+
+Every push and pull request runs a GitHub Actions pipeline with three jobs:
+
+- **Backend tests** against Postgres and Kafka spun up as service containers, so the full suite including the Spring context test runs in CI
+- **Frontend** build and headless Chrome tests
+- **Deploy** on pushes to `main`, after both jobs pass: SSH into the target VM, pull, and `docker compose up -d --build`
+
+The deploy job self-skips until three repository secrets exist: `SSH_HOST`, `SSH_USER`, `SSH_KEY`. Add them and every green build on `main` ships to the VM.
 
 ## API Contract
 
