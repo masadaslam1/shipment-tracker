@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import {ShipmentTableComponent} from './components/shipment-table/shipment-table.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [ShipmentTableComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

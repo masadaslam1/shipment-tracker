@@ -1,0 +1,39 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Shipment Tracking</h1>
+  <span [class]="'badge ' + (status() === 'connected' ? 'bg-success' : 'bg-secondary')">
+    {{ status() === 'connected' ? 'Live' : 'Offline' }}
+  </span>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle mb-0">
+    <thead class="table-light">
+    <tr>
+      <th>Tracking</th>
+      <th>Status</th>
+      <th>Route</th>
+      <th>Location</th>
+      <th>Carrier</th>
+      <th class="text-end">Weight (kg)</th>
+      <th>Last Update</th>
+    </tr>
+    </thead>
+    <tbody>
+    @for (shipment of shipments(); track shipment.trackingNumber) {
+    <tr>
+      <td><strong>{{ shipment.trackingNumber }}</strong></td>
+      <td>
+        <span [class]="'badge bg-' + statusColor(shipment.status)">
+          {{ statusLabel(shipment.status) }}
+        </span>
+      </td>
+      <td>{{ shipment.origin }} → {{ shipment.destination }}</td>
+      <td>{{ shipment.currentLocation ?? 'N/A' }}</td>
+      <td>{{ shipment.carrier ?? 'N/A' }}</td>
+      <td class="text-end">{{ shipment.weight }}</td>
+      <td class="text-muted">{{ shipment.lastUpdated | date: 'medium' }}</td>
+    </tr>
+    }
+    </tbody>
+  </table>
+</div>

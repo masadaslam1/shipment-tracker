@@ -21,15 +21,16 @@ export class ShipmentService {
     onConnect: () => {
       this.statusSignal.set('connected');
       this.loadSnapshot();
+      this.stompClient.subscribe('/topic/shipments', (message) => {
+        this.handleFrame(JSON.parse(message.body) as Shipment);
+      });
     },
     onWebSocketClose: () => this.statusSignal.set('disconnected'),
   });
 
   constructor() {
     this.stompClient.activate();
-    this.stompClient.subscribe('/topic/shipments', (message) => {
-      this.handleFrame(JSON.parse(message.body) as Shipment);
-    });
+
   }
 
 
