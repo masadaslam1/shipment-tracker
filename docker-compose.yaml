@@ -4,6 +4,7 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: shipment-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -21,6 +22,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.7.1
     container_name: shipment-kafka
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
@@ -45,6 +47,35 @@ services:
       - "29092:29092"
     volumes:
       - kafka-data:/var/lib/kafka/data
+
+  # ── Spring Boot backend ──────────────────────────────────────
+  backend:
+    build: .
+    container_name: shipment-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      # In-network addresses override the localhost defaults from application.yaml
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      # For simulation
+      SPRING_PROFILES_ACTIVE: simulation
+
+  # ── Angular frontend behind nginx ─────────────────────────────
+  frontend:
+    build: ./frontend
+    container_name: shipment-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
 
 volumes:
   pgdata:
