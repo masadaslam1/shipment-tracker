@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -62,5 +63,10 @@ public class ShipmentService {
 
         log.info("Created shipment {}", event.trackingNumber());
         return saved;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Shipment> getAllShipments() {
+        return shipmentRepository.findAllByOrderByLastUpdatedDesc();
     }
 }

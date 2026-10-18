@@ -14,6 +14,6 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long>, Custo
 
     List<Shipment> findByStatus(ShipmentStatus status);
 
-    List<Shipment> findAllByOrderByCreatedAtDesc();
+    List<Shipment> findAllByOrderByLastUpdatedDesc();
 
 }
